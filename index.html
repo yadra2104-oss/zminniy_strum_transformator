@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Змінний струм. Трансформатори • Фізика • 11 клас</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#667eea;--secondary:#764ba2;--success:#10b981;--danger:#ef4444;--warning:#f59e0b;--glass:rgba(255,255,255,.08);--glass-border:rgba(255,255,255,.18)}
+body{font-family:'IBM Plex Sans',sans-serif;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#334155 100%);background-attachment:fixed;color:#e2e8f0;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+#particles-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.container{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:20px;display:flex;flex-direction:column;align-items:center;min-height:100vh}
+.screen{display:none;width:100%;max-width:700px;margin:auto}
+.screen.active{display:block;animation:fadeIn .3s ease-in}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.glass-panel{background:var(--glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--glass-border);border-radius:20px;padding:32px;box-shadow:0 8px 32px rgba(0,0,0,.3)}
+h1{font-family:'Unbounded',sans-serif;font-size:2.2rem;font-weight:700;margin-bottom:8px;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.subtitle{font-size:1rem;color:#94a3b8;margin-bottom:24px}
+.chips{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+.chip{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#ffffff;font-weight:600;font-size:.95rem;padding:8px 14px;border-radius:12px;text-shadow:0 1px 2px rgba(0,0,0,.3);display:inline-flex;align-items:center;gap:6px}
+.topic-chip{font-size:.75rem;padding:4px 10px;border-radius:8px;font-weight:600;display:inline-block}
+.topic-chip.ac{background:#3b82f6;color:#fff}
+.topic-chip.trans{background:#8b5cf6;color:#fff}
+.form-group{margin-bottom:20px}
+label{display:block;font-size:.9rem;font-weight:500;margin-bottom:8px;color:#cbd5e1}
+input[type="text"]{width:100%;padding:14px 16px;font-size:16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.2);border-radius:12px;color:#e2e8f0;font-family:'IBM Plex Sans',sans-serif;touch-action:manipulation}
+input[type="text"]:focus{outline:none;border-color:var(--primary);background:rgba(255,255,255,.08)}
+.btn{width:100%;padding:16px;font-size:1.1rem;font-weight:600;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;border-radius:12px;cursor:pointer;transition:transform .2s,box-shadow .2s;touch-action:manipulation;font-family:'IBM Plex Sans',sans-serif}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(102,126,234,.4)}
+.header-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:12px 16px;background:var(--glass);backdrop-filter:blur(8px);border-radius:12px;border:1px solid var(--glass-border)}
+.counter{font-family:'JetBrains Mono',monospace;font-size:1.1rem;font-weight:600}
+.progress-bar{flex:1;height:8px;background:rgba(255,255,255,.1);border-radius:4px;margin:0 16px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--secondary));transition:width .3s ease}
+.violations{font-size:.9rem;color:var(--warning);font-weight:600;font-family:'JetBrains Mono',monospace}
+.timer-container{position:relative;width:80px;height:80px;margin:0 auto 24px}
+.timer-svg{transform:rotate(-90deg)}
+.timer-circle{fill:none;stroke:rgba(255,255,255,.1);stroke-width:6}
+.timer-progress{fill:none;stroke:var(--primary);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .1s linear,stroke .3s}
+.timer-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:600}
+.timer-critical .timer-progress{stroke:var(--danger);animation:pulse .5s ease-in-out infinite}
+.timer-critical .timer-text{color:var(--danger)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.question-text{font-size:1.3rem;font-weight:600;margin-bottom:24px;line-height:1.5}
+.options{display:flex;flex-direction:column;gap:12px}
+.option{padding:16px 20px;background:rgba(255,255,255,.05);border:2px solid rgba(255,255,255,.1);border-radius:12px;cursor:pointer;transition:all .2s;font-size:1rem;touch-action:manipulation}
+.option:hover{background:rgba(255,255,255,.08);border-color:var(--primary);transform:translateX(4px)}
+.option.selected{background:rgba(102,126,234,.2);border-color:var(--primary)}
+.result-screen{text-align:center}
+.result-score{position:relative;width:200px;height:200px;margin:0 auto 32px}
+.result-svg{transform:rotate(-90deg)}
+.result-circle{fill:none;stroke:rgba(255,255,255,.1);stroke-width:12}
+.result-progress{fill:none;stroke:var(--success);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset 1s ease-out}
+.result-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.result-grade{font-family:'Unbounded',sans-serif;font-size:3rem;font-weight:700;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.result-max{font-size:1rem;color:#94a3b8}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:rgba(255,255,255,.05);padding:16px;border-radius:12px;text-align:center}
+.stat-value{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:600;margin-bottom:4px}
+.stat-label{font-size:.85rem;color:#94a3b8}
+.stat-correct .stat-value{color:var(--success)}
+.stat-wrong .stat-value{color:var(--danger)}
+.stat-skip .stat-value{color:var(--warning)}
+.result-dots{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:32px}
+.dot{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:600}
+.dot-correct{background:var(--success);color:#fff}
+.dot-wrong{background:var(--danger);color:#fff}
+.dot-skip{background:var(--warning);color:#fff}
+.toast-container{position:fixed;top:20px;right:20px;z-index:1000;display:flex;flex-direction:column;gap:12px}
+.toast{background:rgba(239,68,68,.95);backdrop-filter:blur(8px);color:#fff;padding:12px 20px;border-radius:12px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.3);animation:slideIn .3s ease-out}
+@keyframes slideIn{from{transform:translateX(400px);opacity:0}to{transform:translateX(0);opacity:1}}
+.block-screen{text-align:center;padding:40px}
+.block-icon{font-size:4rem;margin-bottom:20px}
+.block-message{font-size:1.2rem;margin-bottom:24px;line-height:1.6}
+.footer{text-align:center;margin-top:32px;font-size:.85rem;color:#64748b}
+.fullscreen-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.95);z-index:2000;display:none;align-items:center;justify-content:center;flex-direction:column}
+.fullscreen-overlay.active{display:flex}
+.fullscreen-message{font-size:1.5rem;margin-bottom:24px;text-align:center;padding:20px}
+@media (max-width:700px){
+  body{background-attachment:scroll}
+  .glass-panel,.header-bar,.toast{backdrop-filter:none;-webkit-backdrop-filter:none}
+  h1{font-size:1.6rem}
+  .glass-panel{padding:20px}
+  .question-text{font-size:1.1rem}
+  .option{padding:16px}
+  .btn{padding:16px}
+  .stats{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<canvas id="particles-canvas"></canvas>
+
+<div class="container">
+  <!-- START -->
+  <div id="start-screen" class="screen active">
+    <div class="glass-panel">
+      <h1>Змінний струм. Трансформатори</h1>
+      <p class="subtitle">Фізика • <span id="classDisplay"></span> клас</p>
+      <div class="chips">
+        <div class="chip">📝 <span id="totalDisplay"></span> питань</div>
+        <div class="chip">⏱ <span id="timeDisplay"></span> с на питання</div>
+        <div class="chip">🎯 11-бальна система</div>
+        <div class="chip">📚 2 підтеми</div>
+      </div>
+      <div class="form-group">
+        <label for="studentName">Прізвище та ім'я *</label>
+        <input type="text" id="studentName" placeholder="Наприклад: Шевченко Тарас" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="studentGroup">Група / клас</label>
+        <input type="text" id="studentGroup" placeholder="Наприклад: 11-А" autocomplete="off">
+      </div>
+      <button class="btn" id="startBtn">Розпочати тест</button>
+      <div class="footer"><p>Повноекранний режим • Ліміт часу • Результат надсилається вчителю</p></div>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz-screen" class="screen">
+    <div class="header-bar">
+      <div class="counter"><span id="currentQuestion">01</span> / <span id="totalDisplay2"></span></div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="violations">⚠ Порушень: <span id="violationCount">0</span>/3</div>
+    </div>
+    <div class="glass-panel">
+      <div class="timer-container" id="timerContainer">
+        <svg class="timer-svg" width="80" height="80">
+          <circle class="timer-circle" cx="40" cy="40" r="34"></circle>
+          <circle class="timer-progress" id="timerProgress" cx="40" cy="40" r="34" stroke-dasharray="213.6" stroke-dashoffset="0"></circle>
+        </svg>
+        <div class="timer-text" id="timerText">12</div>
+      </div>
+      <div id="topicChip" class="topic-chip" style="margin-bottom:16px;"></div>
+      <div class="question-text" id="questionText"></div>
+      <div class="options" id="optionsContainer"></div>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result-screen" class="screen">
+    <div class="glass-panel result-screen">
+      <h1>Результати тесту</h1>
+      <p class="subtitle">Фізика • <span id="classDisplay2"></span> клас</p>
+      <div class="result-score">
+        <svg class="result-svg" width="200" height="200">
+          <circle class="result-circle" cx="100" cy="100" r="88"></circle>
+          <circle class="result-progress" id="resultProgress" cx="100" cy="100" r="88" stroke-dasharray="553" stroke-dashoffset="553"></circle>
+        </svg>
+        <div class="result-text">
+          <div class="result-grade" id="resultGrade">0</div>
+          <div class="result-max">/ 11</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat-card stat-correct"><div class="stat-value" id="correctCount">0</div><div class="stat-label">Правильних</div></div>
+        <div class="stat-card stat-wrong"><div class="stat-value" id="wrongCount">0</div><div class="stat-label">Помилок</div></div>
+        <div class="stat-card stat-skip"><div class="stat-value" id="skipCount">0</div><div class="stat-label">Пропущено</div></div>
+      </div>
+      <div class="result-dots" id="resultDots"></div>
+      <div id="sendStatus" style="margin-bottom:20px;font-size:.9rem;color:#94a3b8;"></div>
+      <button class="btn" id="retryBtn" style="display:none;">Надіслати ще раз</button>
+    </div>
+  </div>
+
+  <!-- BLOCK -->
+  <div id="block-screen" class="screen">
+    <div class="glass-panel block-screen">
+      <div class="block-icon">🚫</div>
+      <h1>Тест заблоковано</h1>
+      <div class="block-message" id="blockMessage"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="fullscreen-overlay" id="fullscreenOverlay">
+  <div class="fullscreen-message">⚠️ Поверніться до тесту</div>
+  <button class="btn" id="returnBtn" style="width:auto;padding:16px 32px;">Продовжити</button>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ===== КОНСТАНТИ =====
+  var CLASS = 11;
+  var TOTAL = 20;
+  var QUESTION_TIME = 12;
+  var TOPIC = 'Змінний струм. Трансформатори';
+  var APPS_SCRIPT_URL = ''; // <-- ВСТАВТЕ URL веб-застосунку (закінчується на /exec)
+  var SECRET = 'fiz11-2026-secret';
+  var TELEGRAM_BOT_TOKEN = '8977852457:AAH1jJz54Wb5WFxNn1CrpBlRKbML7Pf_2zs';
+  var TELEGRAM_CHAT_ID = '622617127';
+
+  // Безпечне кодування кирилиці (без btoa напряму)
+  function safeBtoa(str) {
+    try { return btoa(unescape(encodeURIComponent(str))); }
+    catch(e) {
+      var hash = 0;
+      for (var i = 0; i < str.length; i++) { hash = ((hash << 5) - hash) + str.charCodeAt(i); hash |= 0; }
+      return 'hash_' + Math.abs(hash);
+    }
+  }
+  var TEST_ID = safeBtoa(TOPIC + CLASS);
+
+  // ===== МИТТЄВЕ ЗАПОВНЕННЯ КОНСТАНТ (null-safe) =====
+  function setConst(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+  function fillConstants() {
+    setConst('classDisplay', CLASS);
+    setConst('classDisplay2', CLASS);
+    setConst('totalDisplay', TOTAL);
+    setConst('totalDisplay2', TOTAL);
+    setConst('timeDisplay', QUESTION_TIME);
+  }
+  fillConstants();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', fillConstants);
+  }
+
+  // ===== ПИТАННЯ =====
+  // Питань: 10+10 = 20 ✓
+  var QUESTIONS = [
+    // --- Змінний струм (10) ---
+    {topic:'ac', level:1, q:'Яка стандартна частота змінного струму в електромережі України?',
+     options:['50 Гц','60 Гц','100 Гц','220 Гц'], answer:0},
+    {topic:'ac', level:1, q:'Діюче значення змінного струму — це значення такого постійного струму, що за той самий час виділяє...',
+     options:['Більше теплоти','Менше теплоти','Таку саму кількість теплоти','Не виділяє теплоти'], answer:2},
+    {topic:'ac', level:2, q:'Вольтметр у мережі показує 220 В. Це значення...',
+     options:['Амплітудне','Діюче','Середнє','Миттєве'], answer:1},
+    {topic:'ac', level:2, q:'Яка формула зв\'язує діюче та амплітудне значення напруги?',
+     options:['U = Um','U = Um/2','U = Um/√2','U = 2·Um'], answer:2},
+    {topic:'ac', level:2, q:'Яка формула для періоду коливань?',
+     options:['T = f','T = 1/f','T = 2πf','T = f²'], answer:1},
+    {topic:'ac', level:3, q:'Частота струму 10 Гц. Який період?',
+     options:['10 с','1 с','0.1 с','0.01 с'], answer:2},
+    {topic:'ac', level:3, q:'Період коливань 0.02 с. Яка частота?',
+     options:['20 Гц','50 Гц','100 Гц','5 Гц'], answer:1},
+    {topic:'ac', level:3, q:'За 2 секунди відбулося 100 повних коливань. Яка частота?',
+     options:['200 Гц','50 Гц','100 Гц','25 Гц'], answer:1},
+    {topic:'ac', level:4, q:'Частота 20 Гц. Скільки коливань відбудеться за 5 секунд?',
+     options:['4','20','100','25'], answer:2},
+    {topic:'ac', level:4, q:'Період 0.05 с. Скільки коливань відбудеться за 2 секунди?',
+     options:['10','20','40','50'], answer:2},
+    // --- Трансформатори (10) ---
+    {topic:'trans', level:1, q:'На якому струмі працює трансформатор?',
+     options:['Лише на постійному','Лише на змінному','На будь-якому','Лише на імпульсному'], answer:1},
+    {topic:'trans', level:1, q:'Яке фізичне явище лежить в основі роботи трансформатора?',
+     options:['Електростатична взаємодія','Електромагнітна індукція','Теплова дія струму','Намагнічування постійним полем'], answer:1},
+    {topic:'trans', level:2, q:'N₁ = 200, N₂ = 100. Чому дорівнює коефіцієнт трансформації k?',
+     options:['0.5','2','100','300'], answer:1},
+    {topic:'trans', level:2, q:'N₁ = 100, N₂ = 50, U₁ = 200 В. Яка напруга на вторинній обмотці?',
+     options:['400 В','100 В','50 В','200 В'], answer:1},
+    {topic:'trans', level:2, q:'Потужність на вході 200 Вт, на виході 190 Вт. Який ККД?',
+     options:['90%','95%','100%','85%'], answer:1},
+    {topic:'trans', level:3, q:'Чому енергію передають на великі відстані під високою напругою?',
+     options:['Щоб збільшити струм','Щоб зменшити втрати на нагрівання','Щоб збільшити частоту','Для краси'], answer:1},
+    {topic:'trans', level:3, q:'N₁ = 400, N₂ = 200, U₁ = 200 В. Яка напруга U₂?',
+     options:['400 В','100 В','200 В','50 В'], answer:1},
+    {topic:'trans', level:3, q:'Який трансформатор підвищує напругу?',
+     options:['Той, де N₂ < N₁','Той, де N₂ > N₁','Той, де N₂ = N₁','Будь-який'], answer:1},
+    {topic:'trans', level:4, q:'N₁ = 300, N₂ = 100, U₁ = 300 В. Яка напруга U₂?',
+     options:['900 В','100 В','300 В','50 В'], answer:1},
+    {topic:'trans', level:4, q:'U₁ = 100 В, N₁ = 50, N₂ = 100. Яка напруга U₂?',
+     options:['50 В','100 В','200 В','150 В'], answer:2}
+  ];
+
+  // ===== STATE =====
+  var state = {
+    phase: 'start',
+    studentName: '', studentGroup: '', studentId: '',
+    questions: [], currentQuestion: 0, answers: [],
+    violations: 0, timeLeft: QUESTION_TIME, timerInterval: null,
+    lastViolationTime: 0, autoTerminated: false, protectionInitialized: false
+  };
+
+  // ===== ДОПОМІЖНІ =====
+  function shuffle(arr) {
+    var r = arr.slice();
+    for (var i = r.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = r[i]; r[i] = r[j]; r[j] = t;
+    }
+    return r;
+  }
+  function normalizeName(name) {
+    return name.toLowerCase()
+      .replace(/[''`]/g, '')
+      .replace(/[^\w\sа-яіїєґ]/gi, '')
+      .split(/\s+/)
+      .filter(function(w){ return w.length > 0; })
+      .sort()
+      .join('_');
+  }
+  function showToast(msg) {
+    var c = document.getElementById('toastContainer');
+    var t = document.createElement('div');
+    t.className = 'toast'; t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(function(){ if (t.parentNode) t.parentNode.removeChild(t); }, 2000);
+  }
+  function showScreen(id) {
+    var s = document.querySelectorAll('.screen');
+    for (var i = 0; i < s.length; i++) s[i].classList.remove('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  // ===== ЛОКАЛЬНИЙ ЗАХИСТ (4 шари + реєстр) =====
+  function saveAttemptLocal(status, grade) {
+    try {
+      var registry = JSON.parse(localStorage.getItem(TEST_ID + '_registry') || '[]');
+      var existing = null;
+      for (var i = 0; i < registry.length; i++) if (registry[i].id === state.studentId) { existing = registry[i]; break; }
+      if (existing) { existing.status = status; existing.grade = grade; existing.date = new Date().toISOString(); }
+      else registry.push({id: state.studentId, name: state.studentName, status: status, grade: grade, date: new Date().toISOString()});
+      localStorage.setItem(TEST_ID + '_registry', JSON.stringify(registry));
+      localStorage.setItem(TEST_ID + '_student_' + state.studentId, JSON.stringify({status: status, grade: grade, date: new Date().toISOString()}));
+      document.cookie = TEST_ID + '_' + state.studentId + '=' + encodeURIComponent(JSON.stringify({status: status, grade: grade, date: new Date().toISOString()})) + '; max-age=315360000; path=/';
+      sessionStorage.setItem(TEST_ID + '_student_' + state.studentId, JSON.stringify({status: status, grade: grade, date: new Date().toISOString()}));
+    } catch(e) {}
+  }
+  function checkAttemptLocal() {
+    try {
+      var registry = JSON.parse(localStorage.getItem(TEST_ID + '_registry') || '[]');
+      for (var i = 0; i < registry.length; i++) if (registry[i].id === state.studentId) return registry[i];
+      var d1 = localStorage.getItem(TEST_ID + '_student_' + state.studentId);
+      if (d1) return JSON.parse(d1);
+      var cookies = document.cookie.split(';');
+      for (var j = 0; j < cookies.length; j++) {
+        var p = cookies[j].trim().split('=');
+        if (p[0] === TEST_ID + '_' + state.studentId) return JSON.parse(decodeURIComponent(p.slice(1).join('=')));
+      }
+      var d2 = sessionStorage.getItem(TEST_ID + '_student_' + state.studentId);
+      if (d2) return JSON.parse(d2);
+      return null;
+    } catch(e) { return null; }
+  }
+  function clearLocalAttempts(name) {
+    try {
+      var id = normalizeName(name);
+      var registry = JSON.parse(localStorage.getItem(TEST_ID + '_registry') || '[]');
+      var filtered = [];
+      for (var i = 0; i < registry.length; i++) if (registry[i].id !== id) filtered.push(registry[i]);
+      localStorage.setItem(TEST_ID + '_registry', JSON.stringify(filtered));
+      localStorage.removeItem(TEST_ID + '_student_' + id);
+      sessionStorage.removeItem(TEST_ID + '_student_' + id);
+      document.cookie = TEST_ID + '_' + id + '=; max-age=0; path=/';
+    } catch(e) {}
+  }
+
+  // ===== ХМАРА (Google Apps Script) =====
+  function checkCloud() {
+    if (!APPS_SCRIPT_URL) return Promise.resolve({ok: true, cloudAvailable: false});
+    var controller = null, timeoutId = null;
+    try { controller = new AbortController(); timeoutId = setTimeout(function(){ controller.abort(); }, 4000); } catch(e) {}
+    return fetch(APPS_SCRIPT_URL + '?action=check&secret=' + SECRET + '&testId=' + encodeURIComponent(TEST_ID) + '&studentId=' + encodeURIComponent(state.studentId),
+      controller ? {method:'GET', signal: controller.signal} : {method:'GET'})
+      .then(function(r){ if (timeoutId) clearTimeout(timeoutId); return r.json(); })
+      .then(function(d){ return d.ok ? {ok:true, cloudAvailable:true, exists:d.exists, record:d.record} : {ok:false, cloudAvailable:false}; })
+      .catch(function(){ return {ok:false, cloudAvailable:false}; });
+  }
+  function upsertCloud(status, grade, score, violations, retry) {
+    if (!APPS_SCRIPT_URL) return;
+    var params = new URLSearchParams();
+    params.append('action','upsert'); params.append('secret',SECRET);
+    params.append('testId',TEST_ID); params.append('studentId',state.studentId);
+    params.append('name',state.studentName); params.append('group',state.studentGroup);
+    params.append('class',CLASS); params.append('topic',TOPIC);
+    params.append('date',new Date().toISOString()); params.append('status',status);
+    params.append('grade',grade); params.append('score',score); params.append('violations',violations);
+    fetch(APPS_SCRIPT_URL, {method:'POST', mode:'cors', body:params})
+      .catch(function(){
+        if (!retry) setTimeout(function(){ upsertCloud(status, grade, score, violations, true); }, 1500);
+      });
+  }
+
+  // ===== TELEGRAM (виправлено: без CORS-preflight) =====
+  function buildMessage(data) {
+    return '📝 Результати тесту\n\n' +
+      '👤 ' + data.name + '\n' +
+      '🏫 Група: ' + data.group + '\n' +
+      '📚 Клас: ' + CLASS + '\n' +
+      '📅 ' + new Date().toLocaleString('uk-UA') + '\n' +
+      '📖 Тема: ' + TOPIC + '\n\n' +
+      '✅ Правильних: ' + data.correct + '/' + TOTAL + ' (' + Math.round(data.correct / TOTAL * 100) + '%)\n' +
+      '🎯 Оцінка: ' + data.grade + '/11\n' +
+      '⚠️ Порушень: ' + data.violations + (data.autoTerminated ? ' (АВТОЗАВЕРШЕННЯ)' : '') + '\n\n' +
+      '📊 Відповіді: ' + data.answersList;
+  }
+
+  function sendToTelegram(data) {
+    var text = buildMessage(data);
+    var url = 'https://api.telegram.org/bot' + TELEGRAM_BOT_TOKEN + '/sendMessage';
+
+    // Спосіб 1: POST form-urlencoded — «простий» запит, БЕЗ preflight CORS
+    var form = new URLSearchParams();
+    form.append('chat_id', TELEGRAM_CHAT_ID);
+    form.append('text', text);
+
+    return fetch(url, { method: 'POST', body: form })
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        console.log('TG (POST):', d);
+        if (d.ok) return {ok: true};
+        console.error('TG error:', d.description);
+        return tgGet(url, text);
+      })
+      .catch(function(err){
+        console.warn('TG POST failed:', err);
+        return tgGet(url, text);
+      });
+  }
+
+  // Спосіб 2: GET з параметрами в URL (теж простий запит)
+  function tgGet(url, text) {
+    var getUrl = url + '?chat_id=' + encodeURIComponent(TELEGRAM_CHAT_ID) + '&text=' + encodeURIComponent(text);
+    return fetch(getUrl)
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        console.log('TG (GET):', d);
+        if (d.ok) return {ok: true};
+        console.error('TG error:', d.description);
+        return tgLastResort(url, text);
+      })
+      .catch(function(err){
+        console.warn('TG GET failed:', err);
+        return tgLastResort(url, text);
+      });
+  }
+
+  // Спосіб 3: sendBeacon / no-cors з form-urlencoded (останній резерв)
+  function tgLastResort(url, text) {
+    var form = new URLSearchParams();
+    form.append('chat_id', TELEGRAM_CHAT_ID);
+    form.append('text', text);
+    var delivered = false;
+    try {
+      if (navigator.sendBeacon) delivered = navigator.sendBeacon(url, form);
+      if (!delivered) { fetch(url, { method: 'POST', body: form, mode: 'no-cors' }); delivered = true; }
+    } catch(e) { delivered = false; }
+    return Promise.resolve({ok: delivered, uncertain: delivered});
+  }
+
+  function sendResults(correct, grade, list) {
+    var statusDiv = document.getElementById('sendStatus');
+    statusDiv.textContent = '📤 Відправка результатів...';
+    statusDiv.style.color = '#94a3b8';
+    sendToTelegram({
+      name: state.studentName, group: state.studentGroup,
+      correct: correct, grade: grade,
+      violations: state.violations, autoTerminated: state.autoTerminated,
+      answersList: list.trim()
+    }).then(function(r){
+      if (r.ok && !r.uncertain) {
+        statusDiv.textContent = '✅ Результати надіслано вчителю';
+        statusDiv.style.color = '#10b981';
+        document.getElementById('retryBtn').style.display = 'none';
+      } else if (r.ok && r.uncertain) {
+        statusDiv.textContent = '✅ Надіслано резервним способом';
+        statusDiv.style.color = '#10b981';
+        document.getElementById('retryBtn').style.display = 'none';
+      } else {
+        statusDiv.textContent = '❌ Помилка відправки';
+        statusDiv.style.color = '#ef4444';
+        document.getElementById('retryBtn').style.display = 'block';
+      }
+    });
+  }
+
+  // ===== ПЕРЕВІРКА БЛОКУВАННЯ =====
+  function checkBlock() {
+    return checkCloud().then(function(cloud) {
+      if (cloud.cloudAvailable) {
+        return cloud.exists ? {blocked:true, record:cloud.record} : {blocked:false};
+      }
+      var local = checkAttemptLocal();
+      return local ? {blocked:true, record:local} : {blocked:false};
+    });
+  }
+
+  // ===== ЛОГІКА ТЕСТУ =====
+  function startTest() {
+    var name = document.getElementById('studentName').value.trim();
+    var group = document.getElementById('studentGroup').value.trim();
+    if (!name || name.split(/\s+/).length < 2) { showToast('Введіть прізвище та ім\'я'); return; }
+    state.studentName = name;
+    state.studentGroup = group || 'Не вказано';
+    state.studentId = normalizeName(name);
+
+    checkBlock().then(function(res) {
+      if (res.blocked) {
+        var msg = 'Ви вже проходили цей тест.<br><br>';
+        msg += '📅 Дата: ' + new Date(res.record.date).toLocaleString('uk-UA') + '<br>';
+        if (res.record.status === 'done') msg += '🎯 Оцінка: ' + res.record.grade + '/11';
+        else msg += '📊 Спробу використано, тест не завершено';
+        document.getElementById('blockMessage').innerHTML = msg;
+        showScreen('block-screen');
+        return;
+      }
+      // Повноекранний режим
+      try {
+        var el = document.documentElement;
+        if (el.requestFullscreen) el.requestFullscreen().catch(function(){});
+        else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+      } catch(e) {}
+
+      state.questions = shuffle(QUESTIONS);
+      state.answers = [];
+      state.currentQuestion = 0;
+      state.violations = 0;
+      state.autoTerminated = false;
+      document.getElementById('violationCount').textContent = '0';
+      state.phase = 'quiz';
+
+      initProtection(); // захист активується саме тут
+
+      saveAttemptLocal('progress', 0);
+      upsertCloud('progress', 0, 0, 0, false);
+
+      showScreen('quiz-screen');
+      loadQuestion();
+    });
+  }
+
+  function loadQuestion() {
+    if (state.currentQuestion >= state.questions.length) { finishTest(); return; }
+    var q = state.questions[state.currentQuestion];
+    var indices = shuffle([0,1,2,3]);
+
+    document.getElementById('currentQuestion').textContent = ('0' + (state.currentQuestion + 1)).slice(-2);
+    document.getElementById('progressFill').style.width = ((state.currentQuestion / TOTAL) * 100) + '%';
+
+    var chip = document.getElementById('topicChip');
+    if (q.topic === 'ac') { chip.textContent = '⚡ Змінний струм'; chip.className = 'topic-chip ac'; }
+    else { chip.textContent = '🔄 Трансформатори'; chip.className = 'topic-chip trans'; }
+
+    document.getElementById('questionText').textContent = q.q;
+    var box = document.getElementById('optionsContainer');
+    box.innerHTML = '';
+    for (var i = 0; i < indices.length; i++) {
+      (function(idx, num){
+        var opt = document.createElement('div');
+        opt.className = 'option';
+        opt.textContent = String.fromCharCode(1040 + num) + '. ' + q.options[idx];
+        opt.setAttribute('data-index', idx);
+        opt.addEventListener('click', function(){ selectAnswer(idx, opt); });
+        box.appendChild(opt);
+      })(indices[i], i);
+    }
+    startTimer();
+  }
+
+  function startTimer() {
+    state.timeLeft = QUESTION_TIME;
+    updateTimerDisplay();
+    clearInterval(state.timerInterval);
+    state.timerInterval = setInterval(function(){
+      state.timeLeft--;
+      updateTimerDisplay();
+      if (state.timeLeft <= 0) { clearInterval(state.timerInterval); skipQuestion(); }
+    }, 1000);
+  }
+  function updateTimerDisplay() {
+    var circle = document.getElementById('timerProgress');
+    circle.style.strokeDashoffset = (213.6 * (1 - state.timeLeft / QUESTION_TIME));
+    document.getElementById('timerText').textContent = state.timeLeft;
+    var c = document.getElementById('timerContainer');
+    if (state.timeLeft <= Math.min(5, QUESTION_TIME / 3)) c.classList.add('timer-critical');
+    else c.classList.remove('timer-critical');
+  }
+
+  function selectAnswer(idx, el) {
+    if (state.phase !== 'quiz') return;
+    clearInterval(state.timerInterval);
+    var q = state.questions[state.currentQuestion];
+    state.answers.push({correct: idx === q.answer, skipped: false});
+    el.classList.add('selected');
+    setTimeout(function(){ state.currentQuestion++; loadQuestion(); }, 300);
+  }
+  function skipQuestion() {
+    if (state.phase !== 'quiz') return;
+    state.answers.push({correct: false, skipped: true});
+    state.currentQuestion++;
+    loadQuestion();
+  }
+
+  function finishTest() {
+    clearInterval(state.timerInterval);
+    if (state.phase === 'results') return;
+    state.phase = 'results';
+
+    var correct = 0, wrong = 0, skipped = 0;
+    for (var i = 0; i < state.answers.length; i++) {
+      if (state.answers[i].skipped) skipped++;
+      else if (state.answers[i].correct) correct++;
+      else wrong++;
+    }
+    var grade = state.autoTerminated ? 0 : Math.round((correct / TOTAL) * 11);
+
+    showScreen('result-screen');
+    document.getElementById('resultGrade').textContent = grade;
+    document.getElementById('correctCount').textContent = correct;
+    document.getElementById('wrongCount').textContent = wrong;
+    document.getElementById('skipCount').textContent = skipped;
+
+    setTimeout(function(){
+      document.getElementById('resultProgress').style.strokeDashoffset = (553 * (1 - grade / 11));
+    }, 100);
+
+    var dots = document.getElementById('resultDots');
+    dots.innerHTML = '';
+    for (var j = 0; j < state.answers.length; j++) {
+      var d = document.createElement('div');
+      d.className = 'dot';
+      if (state.answers[j].skipped) { d.classList.add('dot-skip'); d.textContent = '⏱'; }
+      else if (state.answers[j].correct) { d.classList.add('dot-correct'); d.textContent = '✓'; }
+      else { d.classList.add('dot-wrong'); d.textContent = '✗'; }
+      dots.appendChild(d);
+    }
+
+    saveAttemptLocal('done', grade);
+    upsertCloud('done', grade, correct, state.violations, false);
+
+    var list = '';
+    for (var k = 0; k < state.answers.length; k++) {
+      if (state.answers[k].skipped) list += (k+1) + '⏱ ';
+      else if (state.answers[k].correct) list += (k+1) + '✔ ';
+      else list += (k+1) + '✖ ';
+    }
+    sendResults(correct, grade, list);
+  }
+
+  // ===== ЗАХИСТ ВІД СПИСУВАННЯ =====
+  function registerViolation() {
+    if (state.phase !== 'quiz') return;
+    var now = Date.now();
+    if (now - state.lastViolationTime < 1500) return; // антиспам 1.5 с
+    state.lastViolationTime = now;
+    state.violations++;
+    document.getElementById('violationCount').textContent = state.violations;
+    showToast('⚠️ Порушення');
+    if (state.violations >= 3) { state.autoTerminated = true; finishTest(); }
+  }
+
+  function initProtection() {
+    if (state.protectionInitialized) return;
+    state.protectionInitialized = true;
+
+    document.addEventListener('visibilitychange', function(){
+      if (document.hidden && state.phase === 'quiz') registerViolation();
+    });
+    window.addEventListener('blur', function(){
+      if (state.phase === 'quiz') registerViolation();
+    });
+    document.addEventListener('fullscreenchange', function(){
+      if (state.phase === 'quiz' && !document.fullscreenElement && !document.webkitFullscreenElement) {
+        document.getElementById('fullscreenOverlay').classList.add('active');
+        registerViolation();
+      }
+    });
+    document.addEventListener('webkitfullscreenchange', function(){
+      if (state.phase === 'quiz' && !document.webkitFullscreenElement) {
+        document.getElementById('fullscreenOverlay').classList.add('active');
+        registerViolation();
+      }
+    });
+    document.addEventListener('keydown', function(e){
+      if (state.phase !== 'quiz') return;
+      var k = e.keyCode || e.which;
+      if (k === 123) { e.preventDefault(); registerViolation(); return; }
+      if (e.ctrlKey && e.shiftKey && (k === 73 || k === 74 || k === 67)) { e.preventDefault(); registerViolation(); return; }
+      if (e.ctrlKey && (k === 67 || k === 86 || k === 88 || k === 85 || k === 83 || k === 80 || k === 65)) { e.preventDefault(); registerViolation(); return; }
+      if (k === 44) { e.preventDefault(); registerViolation(); try { navigator.clipboard.writeText(''); } catch(err){} }
+    });
+    document.addEventListener('keyup', function(e){
+      if (state.phase !== 'quiz') return;
+      if ((e.keyCode || e.which) === 44) { registerViolation(); try { navigator.clipboard.writeText(''); } catch(err){} }
+    });
+    document.addEventListener('contextmenu', function(e){
+      if (state.phase === 'quiz') { e.preventDefault(); registerViolation(); }
+    });
+    document.addEventListener('copy', function(e){ if (state.phase === 'quiz') { e.preventDefault(); registerViolation(); } });
+    document.addEventListener('cut', function(e){ if (state.phase === 'quiz') { e.preventDefault(); registerViolation(); } });
+    document.addEventListener('paste', function(e){ if (state.phase === 'quiz') { e.preventDefault(); registerViolation(); } });
+    document.addEventListener('dragstart', function(e){ if (state.phase === 'quiz') { e.preventDefault(); registerViolation(); } });
+    window.addEventListener('beforeunload', function(e){
+      if (state.phase === 'quiz') { e.preventDefault(); e.returnValue = ''; }
+    });
+  }
+
+  function returnToTest() {
+    document.getElementById('fullscreenOverlay').classList.remove('active');
+    try {
+      var el = document.documentElement;
+      if (el.requestFullscreen) el.requestFullscreen().catch(function(){});
+      else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    } catch(e) {}
+  }
+  window.returnToTest = returnToTest;
+
+  // ===== CANVAS («електрони») =====
+  function initCanvas() {
+    try {
+      var canvas = document.getElementById('particles-canvas');
+      var ctx = canvas.getContext('2d');
+      var isMobile = window.innerWidth < 700 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+      canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+      var parts = [], n = isMobile ? 18 : 50;
+      for (var i = 0; i < n; i++) parts.push({
+        x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+        vx: (Math.random()-.5)*.6, vy: (Math.random()-.5)*.6,
+        r: Math.random()*2+1
+      });
+      function draw() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        for (var i = 0; i < parts.length; i++) {
+          var p = parts[i];
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+          ctx.fillStyle = 'rgba(102,126,234,0.35)'; ctx.fill();
+          if (!isMobile) {
+            p.x += p.vx; p.y += p.vy;
+            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+          }
+        }
+        if (!isMobile) requestAnimationFrame(draw);
+      }
+      draw(); // на мобільних — один статичний кадр
+      window.addEventListener('resize', function(){
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        if (isMobile) draw();
+      });
+    } catch(e) {}
+  }
+
+  // ===== ІНІЦІАЛІЗАЦІЯ (в try-catch) =====
+  try {
+    var urlParams = new URLSearchParams(window.location.search);
+    var unlockParam = urlParams.get('unlock');
+    if (unlockParam) {
+      if (unlockParam === 'all') {
+        try {
+          var reg = JSON.parse(localStorage.getItem(TEST_ID + '_registry') || '[]');
+          for (var ri = 0; ri < reg.length; ri++) clearLocalAttempts(reg[ri].name);
+        } catch(e) {}
+        alert('✅ Всі локальні спроби цього тесту очищено');
+      } else {
+        clearLocalAttempts(unlockParam);
+        alert('✅ Спроба учня «' + unlockParam + '» очищена на цьому пристрої');
+      }
+      history.replaceState(null, '', window.location.pathname);
+    }
+
+    initCanvas();
+
+    document.getElementById('startBtn').addEventListener('click', startTest);
+    document.getElementById('returnBtn').addEventListener('click', returnToTest);
+    document.getElementById('retryBtn').addEventListener('click', function(){
+      var correct = parseInt(document.getElementById('correctCount').textContent, 10);
+      var grade = parseInt(document.getElementById('resultGrade').textContent, 10);
+      var list = '';
+      for (var i = 0; i < state.answers.length; i++) {
+        if (state.answers[i].skipped) list += (i+1) + '⏱ ';
+        else if (state.answers[i].correct) list += (i+1) + '✔ ';
+        else list += (i+1) + '✖ ';
+      }
+      sendResults(correct, grade, list);
+    });
+    document.getElementById('studentName').addEventListener('blur', function(){
+      var name = this.value.trim();
+      if (name.split(/\s+/).length >= 2) {
+        state.studentId = normalizeName(name);
+        checkBlock().then(function(res){
+          if (res.blocked) showToast('⚠️ Цей учень вже проходив тест');
+        });
+      }
+    });
+  } catch(e) { console.error('Init error:', e); }
+
+})();
+</script>
+</body>
+</html>
